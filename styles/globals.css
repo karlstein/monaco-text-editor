@@ -8,6 +8,8 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
 }
 
 a {
@@ -17,4 +19,76 @@ a {
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.listItem:hover {
+  background: #e2e8f0;
+  cursor: pointer;
+}
+
+.github-corner svg {
+  position: absolute;
+  right: 0;
+  top: 0;
+  mix-blend-mode: darken;
+  color: #ffffff;
+  fill: #000000;
+}
+.github-corner:hover .octo-arm {
+  animation: octocat-wave 0.56s;
+}
+@keyframes octocat-wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  60% {
+    transform: rotate(-20deg);
+  }
+  40%,
+  80% {
+    transform: rotate(10deg);
+  }
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

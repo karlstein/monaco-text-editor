@@ -2,9 +2,19 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { languageOptions } from "../../constants/languageOptions";
+import { LanguageOptions } from "../../constants/LanguageOptions";
 import useKeyPress from "../../hooks/useKeyPress";
+import { ThemeProps } from "../../interface/ThemeProps";
 import { defineTheme } from "../../lib/defineTheme";
+import { classnames } from "../../utils/general";
+import CodeEditorWindow from "../CodeEditorWindow";
+import CustomInput from "../CustomInput";
+import Footer from "../Footer";
+import ForMe from "../ForMe";
+import LanguageDropdown from "../LanguageDropdown";
+import OutputDetails from "../OutputDetails";
+import OutputWindow from "../OutputWindow";
+import ThemeDropdown from "../ThemeDropdown";
 
 const javascriptDefault = "// some comment";
 
@@ -13,8 +23,11 @@ export default function Landing() {
   const [customInput, setCustomInput] = useState("");
   const [outputDetails, setOutputDetails] = useState(null);
   const [processing, setProcessing] = useState<Boolean | null>(null);
-  const [theme, setTheme] = useState({ value: "cobalt" });
-  const [language, setLanguage] = useState(languageOptions[0]);
+  const [theme, setTheme] = useState<ThemeProps>({
+    value: "cobalt",
+    label: "Cobalt",
+  });
+  const [language, setLanguage] = useState(LanguageOptions[0]);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Controll");
@@ -60,17 +73,34 @@ export default function Landing() {
       headers: {
         "content-type": "application/json",
         "Content-type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
+        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST!,
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY!,
       },
       data: formData,
     };
 
-    axios.request(options).then(function (response) {
-      console.log("res.data", response.data);
-      const token = response.data.token;
-    });
+    axios
+      .request(options)
+      .then(function (response) {
+        console.log("res.data", response.data);
+        const token = response.data.token;
+        checkStatus(token);
+      })
+      .catch((err) => {
+        let error = err.response ? err.response.data : err;
+
+        let status = err.response.status;
+        console.log("status", status);
+        if (status === 429) {
+          console.log("too many request", status);
+
+          showErrorToast(`Quota of 100 exceeded for the day!`, 10000);
+        }
+        setProcessing(false);
+        console.log("catch block...", error);
+      });
   };
+
   const checkStatus = async (token: any) => {
     const options = {
       method: "GET",
@@ -79,8 +109,8 @@ export default function Landing() {
       headers: {
         "content-type": "application/json",
         "Content-type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
+        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST!,
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY!,
       },
     };
     try {
@@ -105,14 +135,14 @@ export default function Landing() {
     }
   };
 
-  function handleThemeChange(th: any) {
-    const theme = th;
+  function handleThemeChange(th: ThemeProps) {
+    console.log("themeH...", th);
     console.log("theme...", theme);
 
     if (["light", "vs-dark"].includes(theme.value)) {
-      setTheme(theme);
+      setTheme(th);
     } else {
-      defineTheme(theme.value).then((_) => setTheme(theme));
+      defineTheme(th.value).then((_) => setTheme(th));
     }
   }
 
@@ -160,15 +190,61 @@ export default function Landing() {
         pauseOnHover
       />
 
-      <Link
-        href="https://github.com/manuarora700/react-code-editor"
-        title="Fork me on GitHub"
-        className="github-corner"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <a>Link</a>
+      <Link href="https://github.com/manuarora700/react-code-editor">
+        <a
+          title="Fork me on GitHub"
+          className="github-corner"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <ForMe />
+        </a>
       </Link>
+
+      <div className=" h-4 w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500" />
+      <div className=" flex flex-row">
+        <div className=" px-4 py-4">
+          <LanguageDropdown
+            onSelectChange={onSelectChange}
+            language={language}
+          />
+        </div>
+        <div className=" px-4 py-4">
+          <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
+        </div>
+        <div className=" flex flex-row space-x-4 items-start px-4 py-4">
+          <div className=" flex flex-col w-full h-full justify-start items-end">
+            <CodeEditorWindow
+              code={code}
+              onChange={onChange}
+              language={language?.value}
+              theme={theme.value}
+            />
+          </div>
+
+          <div className=" right-container flex flex-shrink-0 w-[30%] flex-col">
+            <OutputWindow outputDetails={outputDetails} />
+            <div className=" flex flex-col items-end">
+              <CustomInput
+                customInput={customInput}
+                setCustomInput={setCustomInput}
+              />
+              <button
+                onClick={handleCompile}
+                disabled={!code}
+                className={classnames(
+                  " mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0",
+                  !code ? "opacity-50" : ""
+                )}
+              >
+                {processing ? "Processing..." : "Compile and Execute"}
+              </button>
+            </div>
+            {outputDetails && <OutputDetails outputDetails={outputDetails} />}
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
   );
 }
