@@ -20,16 +20,14 @@ export default function CodeEditorWindow(props: CodeEditorWindowProps) {
   return (
     <div className=" overlay rounded-md overflow-hidden w-full h-full shadow-2xl">
       <Editor
-        height="85vh"
+        height="80vh"
         width={"100%"}
         language={language || "javascript"}
         value={value}
         theme={theme}
         defaultValue="// some comment"
         onChange={(value) => {
-          if (value) {
-          }
-          handleEditorChange;
+          handleEditorChange(value);
         }}
       />
     </div>

@@ -10,15 +10,19 @@ export default function OutputWindow(props: OutputWindowProps) {
     if (statusId === 6) {
       return (
         <pre className=" px-2 py-1 font-normal text-xs text-red-500">
-          {Buffer.from(outputDetails?.compile_output).toString("base64")}
+          {Buffer.from(outputDetails?.compile_output, "base64").toString(
+            "utf-8"
+          )}
         </pre>
       );
     } else if (statusId === 3) {
       return (
         <pre className=" px-2 py-1 font-normal text-xs text-red-500">
-          {Buffer.from(outputDetails?.compile_output).toString("base64") !==
+          {Buffer.from(outputDetails?.stdout, "base64").toString("utf-8") !==
           null
-            ? `${Buffer.from(outputDetails?.compile_output).toString("base64")}`
+            ? `${Buffer.from(outputDetails?.stdout, "base64").toString(
+                "utf-8"
+              )}`
             : null}
         </pre>
       );
@@ -29,9 +33,11 @@ export default function OutputWindow(props: OutputWindowProps) {
         </pre>
       );
     } else {
-      <pre className=" px-2 py-1 font-normal text-xs text-red-500">
-        {Buffer.from(outputDetails?.stderr).toString("base64")}
-      </pre>;
+      return (
+        <pre className=" px-2 py-1 font-normal text-xs text-red-500">
+          {Buffer.from(outputDetails.stderr, "base64").toString("utf-8")}
+        </pre>
+      );
     }
   };
 

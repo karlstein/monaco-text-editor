@@ -2,6 +2,8 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { LanguageOptions } from "../../constants/LanguageOptions";
 import useKeyPress from "../../hooks/useKeyPress";
 import { ThemeProps } from "../../interface/ThemeProps";
@@ -16,7 +18,35 @@ import OutputDetails from "../OutputDetails";
 import OutputWindow from "../OutputWindow";
 import ThemeDropdown from "../ThemeDropdown";
 
-const javascriptDefault = "// some comment";
+const javascriptDefault = `/**
+* Problem: Binary Search: Search a sorted array for a target value.
+*/
+
+// Time: O(log n)
+const binarySearch = (arr, target) => {
+ return binarySearchHelper(arr, target, 0, arr.length - 1);
+};
+
+const binarySearchHelper = (arr, target, start, end) => {
+ if (start > end) {
+   return false;
+ }
+ let mid = Math.floor((start + end) / 2);
+ if (arr[mid] === target) {
+   return mid;
+ }
+ if (arr[mid] < target) {
+   return binarySearchHelper(arr, target, mid + 1, end);
+ }
+ if (arr[mid] > target) {
+   return binarySearchHelper(arr, target, start, mid - 1);
+ }
+};
+
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const target = 5;
+console.log(binarySearch(arr, target));
+`;
 
 export default function Landing() {
   const [code, setCode] = useState(javascriptDefault);
@@ -62,19 +92,19 @@ export default function Landing() {
     const formData = {
       language_id: language.id,
       //   source_code: btoa(code)
-      source_code: Buffer.from(code, "base64"),
-      stdin: Buffer.from(customInput, "base64"),
+      source_code: Buffer.from(code).toString("base64"),
+      stdin: Buffer.from(customInput).toString("base64"),
     };
 
     const options = {
       method: "POST",
-      url: process.env.REACT_APP_RAPID_API_URL,
+      url: "https://judge0-ce.p.rapidapi.com/submissions",
       params: { base64_encoded: "true", fields: "*" },
       headers: {
         "content-type": "application/json",
-        "Content-type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST!,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY!,
+        "Content-Type": "application/json",
+        "X-RapidAPI-Key": "6062811995mshfb495d145d52be9p172324jsn127e9efb903b",
+        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
       },
       data: formData,
     };
@@ -83,6 +113,7 @@ export default function Landing() {
       .request(options)
       .then(function (response) {
         console.log("res.data", response.data);
+        console.log(formData.source_code);
         const token = response.data.token;
         checkStatus(token);
       })
@@ -104,13 +135,11 @@ export default function Landing() {
   const checkStatus = async (token: any) => {
     const options = {
       method: "GET",
-      url: process.env.REACT_APP_RAPID_API_URL + "/" + token,
+      url: "https://judge0-ce.p.rapidapi.com/submissions" + "/" + token,
       params: { base64_encoded: "true", fields: "*" },
       headers: {
-        "content-type": "application/json",
-        "Content-type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST!,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY!,
+        "X-RapidAPI-Key": "6062811995mshb495d145d52be9p172324jsn127e9efb903b",
+        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
       },
     };
     try {
@@ -126,6 +155,7 @@ export default function Landing() {
         setProcessing(false);
         setOutputDetails(response.data);
         showSuccessToast("Compiled Successfully");
+        console.log("response.data", response.data);
         return;
       }
     } catch (err) {
@@ -212,36 +242,36 @@ export default function Landing() {
         <div className=" px-4 py-4">
           <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
         </div>
-        <div className=" flex flex-row space-x-4 items-start px-4 py-4">
-          <div className=" flex flex-col w-full h-full justify-start items-end">
-            <CodeEditorWindow
-              code={code}
-              onChange={onChange}
-              language={language?.value}
-              theme={theme.value}
-            />
-          </div>
+      </div>
+      <div className=" flex flex-row space-x-4 items-start px-4 py-4">
+        <div className=" flex flex-col w-full h-full justify-start items-end">
+          <CodeEditorWindow
+            code={code}
+            onChange={onChange}
+            language={language?.value}
+            theme={theme.value}
+          />
+        </div>
 
-          <div className=" right-container flex flex-shrink-0 w-[30%] flex-col">
-            <OutputWindow outputDetails={outputDetails} />
-            <div className=" flex flex-col items-end">
-              <CustomInput
-                customInput={customInput}
-                setCustomInput={setCustomInput}
-              />
-              <button
-                onClick={handleCompile}
-                disabled={!code}
-                className={classnames(
-                  " mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0",
-                  !code ? "opacity-50" : ""
-                )}
-              >
-                {processing ? "Processing..." : "Compile and Execute"}
-              </button>
-            </div>
-            {outputDetails && <OutputDetails outputDetails={outputDetails} />}
+        <div className=" right-container flex flex-shrink-0 w-[30%] flex-col">
+          <OutputWindow outputDetails={outputDetails} />
+          <div className=" flex flex-col items-end">
+            <CustomInput
+              customInput={customInput}
+              setCustomInput={setCustomInput}
+            />
+            <button
+              onClick={handleCompile}
+              disabled={!code}
+              className={classnames(
+                " mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0",
+                !code ? "opacity-50" : ""
+              )}
+            >
+              {processing ? "Processing..." : "Compile and Execute"}
+            </button>
           </div>
+          {outputDetails && <OutputDetails outputDetails={outputDetails} />}
         </div>
       </div>
       <Footer />

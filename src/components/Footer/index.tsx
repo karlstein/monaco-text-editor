@@ -35,17 +35,17 @@ export default function Footer() {
           target="__blank"
           className="text-gray-700  hover:bg-red-500 hover:text-white font-medium"
         >
-          Kemal Adiatna (credit to Manu Aurora).{" "}
+          Kemal Adiatna (credit to Manu Arora).{" "}
         </a>
         Code at{" "}
         <a
-          href="https://github.com/manuarora700/react-code-editor"
+          href="https://github.com/karlstein/monaco-text-editor"
           target="__blank"
           className="text-gray-700  hover:bg-red-500 hover:text-white font-medium"
         >
           GitHub.{" "}
         </a>
-        Blog on{" "}
+        Blog (Manu Arora) on{" "}
         <a
           href="https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/"
           target="__blank"
