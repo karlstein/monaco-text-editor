@@ -138,7 +138,7 @@ export default function Landing() {
       url: "https://judge0-ce.p.rapidapi.com/submissions" + "/" + token,
       params: { base64_encoded: "true", fields: "*" },
       headers: {
-        "X-RapidAPI-Key": "6062811995mshb495d145d52be9p172324jsn127e9efb903b",
+        "X-RapidAPI-Key": "6062811995mshfb495d145d52be9p172324jsn127e9efb903b",
         "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
       },
     };
@@ -233,27 +233,36 @@ export default function Landing() {
 
       <div className=" h-4 w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500" />
       <div className=" flex flex-row">
-        <div className=" px-4 py-4">
-          <LanguageDropdown
-            onSelectChange={onSelectChange}
-            language={language}
-          />
+        <div className=" flex flex-shrink-0 w-[30%] h-full my-5 mx-4">
+          <div className="">
+            <p>data</p>
+          </div>
         </div>
-        <div className=" px-4 py-4">
-          <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
-        </div>
-      </div>
-      <div className=" flex flex-row space-x-4 items-start px-4 py-4">
-        <div className=" flex flex-col w-full h-full justify-start items-end">
-          <CodeEditorWindow
-            code={code}
-            onChange={onChange}
-            language={language?.value}
-            theme={theme.value}
-          />
-        </div>
+        <div className=" flex flex-col w-[65%] space-x-4 items-start px-5 py-4">
+          <div className=" flex flex-row">
+            <div className=" px-4 py-4">
+              <LanguageDropdown
+                onSelectChange={onSelectChange}
+                language={language}
+              />
+            </div>
+            <div className=" px-4 py-4">
+              <ThemeDropdown
+                handleThemeChange={handleThemeChange}
+                theme={theme}
+              />
+            </div>
+          </div>
+          <div className=" flex flex-col w-full h-full justify-start">
+            <CodeEditorWindow
+              code={code}
+              onChange={onChange}
+              language={language?.value}
+              theme={theme.value}
+            />
+          </div>
 
-        <div className=" right-container flex flex-shrink-0 w-[30%] flex-col">
+          {/* <div className=" right-container flex flex-shrink-0 w-[30%] flex-col">
           <OutputWindow outputDetails={outputDetails} />
           <div className=" flex flex-col items-end">
             <CustomInput
@@ -272,6 +281,7 @@ export default function Landing() {
             </button>
           </div>
           {outputDetails && <OutputDetails outputDetails={outputDetails} />}
+        </div> */}
         </div>
       </div>
       <Footer />
